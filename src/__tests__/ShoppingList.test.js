@@ -11,24 +11,24 @@ const testData = [
 ];
 
 test("displays all items when initially rendered", () => {
-  const { container } = render(<ShoppingList items={testData} />);
-  expect(container.querySelector(".Items").children).toHaveLength(
-    testData.length
+  const { container } = render(
+    <ShoppingList items={testData} selectedCategory="All" onCategoryChange={() => {}} />
   );
+  expect(container.querySelector(".Items").children).toHaveLength(testData.length);
 });
 
 test("displays only items that match the selected category", () => {
-  const { container } = render(<ShoppingList items={testData} />);
-
-  fireEvent.change(screen.getByRole("combobox"), {
-    target: { value: "Dairy" },
-  });
-
+  const { container } = render(
+    <ShoppingList items={testData} selectedCategory="Produce" onCategoryChange={() => {}} />
+  );
   expect(container.querySelector(".Items").children).toHaveLength(2);
+});
 
-  fireEvent.change(screen.getByRole("combobox"), {
-    target: { value: "Dessert" },
-  });
-
-  expect(container.querySelector(".Items").children).toHaveLength(1);
+test("calls onCategoryChange when filter selection changes", () => {
+  const onCategoryChange = jest.fn();
+  render(
+    <ShoppingList items={testData} selectedCategory="All" onCategoryChange={onCategoryChange} />
+  );
+  fireEvent.change(screen.getByRole("combobox"), { target: { value: "Dessert" } });
+  expect(onCategoryChange).toHaveBeenCalledTimes(1);
 });
